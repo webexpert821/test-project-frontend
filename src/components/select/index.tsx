@@ -1,10 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
-import { MdVisibility, MdVisibilityOff } from 'react-icons/md';
+import { MdOutlineKeyboardArrowDown, MdOutlineKeyboardArrowUp, MdVisibility, MdVisibilityOff } from 'react-icons/md';
 
 interface InputProps {
-  icon?: React.ReactNode;
-  type?: string;
+  icon: React.ReactNode;
   name: string;
   label?: string;
   value: string;
@@ -13,14 +12,15 @@ interface InputProps {
   isError?: boolean;
   placeholder?: string;
   message?: string;
+  option: Array<{ value: string }>;
 }
 
-export const InputField = (props: InputProps) => {
-  const { icon, type, name, label, value, setValue, isDisabled, isError, placeholder, message } = props;
+export const Select = (props: InputProps) => {
+  const { icon, name, label, value, setValue, isDisabled, isError, placeholder, message, option } = props;
   const inputRef = useRef<HTMLDivElement>(null);
   const valueRef = useRef<HTMLInputElement>(null);
   const [isVisit, setVisit] = useState(false);
-  const [isVisible, setVisible] = useState(false);
+  const [isOpen, setOpen] = useState(false);
 
   useEffect(() => {
     document.addEventListener('mousedown', (event) => handleClickOutside(event as any));
@@ -29,12 +29,18 @@ export const InputField = (props: InputProps) => {
   const handleClickOutside = (event: React.MouseEvent<HTMLElement>) => {
     if (inputRef.current != null && !inputRef.current.contains(event.target as any)) {
       setVisit(false);
+      setOpen(false);
     }
   };
 
   const handleClickInside = () => {
     setVisit(true);
     valueRef.current?.focus();
+  };
+
+  const handleClick = (val: string) => {
+    setValue(name, val);
+    setOpen(false);
   };
 
   return (
@@ -44,27 +50,28 @@ export const InputField = (props: InputProps) => {
         onMouseUp={() => handleClickInside()}
         visited={isVisit ? 1 : 0}
         isError={isError}
+        data-aria-expanded={isOpen}
       >
-        <InputWraper>
+        <InputWraper onClick={() => setOpen(true)}>
           <InputIcon>{icon}</InputIcon>
-          <InputValue
-            type={isVisible ? 'text' : type}
-            value={value}
-            disabled={isDisabled}
-            ref={valueRef}
-            placeholder={placeholder !== undefined ? placeholder : ''}
-            onChange={(e: React.FormEvent<HTMLInputElement>) => setValue(name, e.currentTarget.value)}
-          />
-          {type === 'password' && (
-            <InputIcon onClick={() => setVisible(!isVisible)} style={{ cursor: 'pointer' }}>
-              {isVisible ? (
-                <MdVisibility style={{ width: '100%', height: '100%' }} />
-              ) : (
-                <MdVisibilityOff style={{ width: '100%', height: '100%' }} />
-              )}
-            </InputIcon>
-          )}
+          <InputValue ref={valueRef} onClick={() => setOpen(true)}>
+            {value === '' ? placeholder : value}
+          </InputValue>
+          <InputIcon>
+            {isOpen ? (
+              <MdOutlineKeyboardArrowUp style={{ width: '100%', height: '100%' }} />
+            ) : (
+              <MdOutlineKeyboardArrowDown style={{ width: '100%', height: '100%' }} />
+            )}
+          </InputIcon>
         </InputWraper>
+        <SelectContent className="selectContent" style={{ height: isOpen ? 'fit-content' : '0px' }}>
+          {option.map((item, index) => (
+            <SelectItem onClick={(e) => handleClick(e.currentTarget.innerText)} hidden={isOpen} key={index}>
+              {item.value}
+            </SelectItem>
+          ))}
+        </SelectContent>
       </InputFieldContainer>
       <InputMessage>{message}</InputMessage>
     </InputContainer>
@@ -90,7 +97,7 @@ const InputFieldContainer = styled.div<InputFieldProps>`
   height: 32px;
   border-radius: 8px;
   border: ${(props) =>
-    props.isError
+    props.isError ?? false
       ? `1px solid ${String(props.theme.danger)}`
       : props.visited === 1
       ? `1px solid ${String(props.theme.primary)}`
@@ -99,6 +106,16 @@ const InputFieldContainer = styled.div<InputFieldProps>`
   align-items: center;
   :hover {
     border: ${(props) => `1px solid ${String(props.theme.primary)}`};
+  }
+  &[data-aria-expanded='true'] {
+    .selectContent {
+      opacity: 1;
+    }
+  }
+  &[data-aria-expanded='false'] {
+    .selectContent {
+      opacity: 0;
+    }
   }
 `;
 
@@ -110,7 +127,7 @@ const InputWraper = styled.div`
   gap: 8px;
 `;
 
-const InputValue = styled.input`
+const InputValue = styled.div`
   outline: none;
   border: none;
   width: 100%;
@@ -135,4 +152,32 @@ const InputMessage = styled.div`
   height: 10px;
   font-size: 12px;
   color: ${(props) => props.theme.danger};
+`;
+
+const SelectContent = styled.div`
+  display: flex;
+  position: absolute;
+  width: 100%;
+  flex-direction: column;
+  border-radius: 8px;
+  background: ${(props) => props.theme.white};
+  letter-spacing: 0.875px;
+  transition: all linear 0.2s;
+  color: ${(props) => props.theme.black};
+  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+
+  top: 2.5rem;
+  z-index: 100;
+`;
+
+const SelectItem = styled.div`
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  color: ${(props) => props.theme.black};
+  :hover {
+    background-color: ${(props) => props.theme.secondary};
+  }
+  display: ${(props) => (props.hidden ?? false ? 'block' : 'none')};
 `;

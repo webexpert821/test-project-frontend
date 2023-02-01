@@ -2,6 +2,7 @@ export const PUBLIC_ROUTES = {
   default: '/',
   home: '/home',
   signin: '/signin',
+  signup: '/signup',
   error404: '/error404'
 };
 
