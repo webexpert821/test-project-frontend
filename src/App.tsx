@@ -1,6 +1,6 @@
 import { Suspense } from 'react';
 
-import { Provider } from './Provider';
+import { AppProvider } from './Provider';
 import { Layout } from './layouts/layout';
 import { HandleRouter } from './router';
 import { BrowserRouter } from 'react-router-dom';
@@ -8,13 +8,13 @@ import { BrowserRouter } from 'react-router-dom';
 function App() {
   return (
     <Suspense fallback={<>Loading</>}>
-      <Provider>
+      <AppProvider>
         <Layout>
           <BrowserRouter>
             <HandleRouter />
           </BrowserRouter>
         </Layout>
-      </Provider>
+      </AppProvider>
     </Suspense>
   );
 }

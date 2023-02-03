@@ -1,5 +1,7 @@
 import { ThemeProvider } from 'styled-components';
+import { Provider } from 'react-redux';
 import { COLORS, TEXT_SIZE } from './config/config';
+import store from './store/store';
 
 interface ProviderProps {
   children: React.ReactNode;
@@ -10,6 +12,10 @@ const theme = {
   ...TEXT_SIZE
 };
 
-export const Provider = ({ children }: ProviderProps) => {
-  return <ThemeProvider theme={theme}>{children}</ThemeProvider>;
+export const AppProvider = ({ children }: ProviderProps) => {
+  return (
+    <ThemeProvider theme={theme}>
+      <Provider store={store}>{children}</Provider>
+    </ThemeProvider>
+  );
 };
