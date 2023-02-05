@@ -8,11 +8,12 @@ interface InputProps {
   name: string;
   label?: string;
   value: string;
-  setValue: (prop: string, value: string | number | boolean) => void;
+  setValue: (e: string | React.ChangeEvent<HTMLInputElement>) => void;
   isDisabled?: boolean;
   isError?: boolean;
   placeholder?: string;
   message?: string;
+  onBlur?: (e: React.FocusEvent<any, Element>) => void;
 }
 
 export const InputField = (props: InputProps) => {
@@ -48,12 +49,13 @@ export const InputField = (props: InputProps) => {
         <InputWraper>
           <InputIcon>{icon}</InputIcon>
           <InputValue
+            name={name}
             type={isVisible ? 'text' : type}
             value={value}
             disabled={isDisabled}
             ref={valueRef}
             placeholder={placeholder !== undefined ? placeholder : ''}
-            onChange={(e: React.FormEvent<HTMLInputElement>) => setValue(name, e.currentTarget.value)}
+            onChange={(e) => setValue(e)}
           />
           {type === 'password' && (
             <InputIcon onClick={() => setVisible(!isVisible)} style={{ cursor: 'pointer' }}>

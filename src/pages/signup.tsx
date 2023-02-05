@@ -1,179 +1,207 @@
-import { useState } from 'react';
 import { FaUser, FaAddressCard, FaCity, FaPhoneAlt, FaLock } from 'react-icons/fa';
 import { MdEmail } from 'react-icons/md';
 import { ImEarth } from 'react-icons/im';
 import { InputField } from 'src/components/input';
-import { Select } from 'src/components/select';
 import { userAvatar } from 'src/config/images';
 import styled from 'styled-components';
 import { Avatar, HomeContainer, LoginContainer } from './signIn';
 import { Button } from 'src/components/button';
 import { useNavigate } from 'react-router-dom';
+import { Formik } from 'formik';
+import * as Yup from 'yup';
 
 export const SignUp = () => {
-  const [state, setState] = useState({
+  interface StateProps {
+    firstName: string;
+    lastName: string;
+    email: string;
+    address1: string;
+    address2: string;
+    city: string;
+    state: string;
+    phone: string;
+    password: string;
+    confirmPass: string;
+  }
+  const state = {
     firstName: '',
-    firstNameErr: '',
     lastName: '',
-    lastNameErr: '',
     email: '',
-    emailErr: '',
     address1: '',
-    address1Err: '',
     address2: '',
-    address2Err: '',
     city: '',
-    cityErr: '',
     state: '',
-    stateErr: '',
     phone: '',
-    phoneErr: '',
     password: '',
-    passwordErr: '',
-    confirmPass: '',
-    confirmPassErr: ''
-  });
-
-  const handleStateChanged = (prop: string, value: string | number | boolean) => {
-    setState({ ...state, [prop]: value });
+    confirmPass: ''
   };
 
   const navigate = useNavigate();
 
+  const validationSchema = Yup.object().shape({
+    firstName: Yup.string().required('First Name is required'),
+    lastName: Yup.string().required('Last Name is required'),
+    email: Yup.string().email('Invalid Email').required('Emaili is reuqired'),
+    address1: Yup.string().required('Address1 is required'),
+    address2: Yup.string().required('Address2 is required'),
+    city: Yup.string().required('City is required'),
+    state: Yup.string().required('State is required'),
+    phone: Yup.string().required('State is required'),
+    password: Yup.string()
+      .required('Password is required')
+      .min(8, 'Password is too short - should be 8 characters minimum'),
+    confirmPass: Yup.string()
+      .required('Confirm Password is required')
+      .oneOf([Yup.ref('password'), null], 'Password must be match')
+      .min(8, 'Password is too short - should be 8 characters minimum')
+  });
+
+  const submitForm = (values: StateProps) => {
+    // eslint-disable-next-line no-console
+    console.log({ values });
+  };
+
+  const inputStyle = { width: '100%', height: '100%' };
+
   return (
-    <HomeContainer>
-      <LoginContainer>
-        <Avatar src={userAvatar} alt="user-avatar" />
-        <InputGroup>
-          <InputField
-            type="text"
-            name="firstName"
-            label="FirstName"
-            placeholder="First Name"
-            value={state.firstName}
-            setValue={handleStateChanged}
-            icon={<FaUser style={{ width: '100%', height: '100%' }} />}
-            isError={state.firstNameErr !== ''}
-            message={state.firstNameErr}
-          />
-          <InputField
-            type="text"
-            name="lastName"
-            label="LastName"
-            placeholder="Last Name"
-            value={state.lastName}
-            setValue={handleStateChanged}
-            icon={<FaUser style={{ width: '100%', height: '100%' }} />}
-            isError={state.lastNameErr !== ''}
-            message={state.lastNameErr}
-          />
-        </InputGroup>
-        <InputField
-          type="text"
-          name="email"
-          label="email"
-          placeholder="Email"
-          value={state.email}
-          setValue={handleStateChanged}
-          icon={<MdEmail style={{ width: '100%', height: '100%' }} />}
-          isError={state.emailErr !== ''}
-          message={state.emailErr}
-        />
-        <InputGroup>
-          <InputField
-            type="text"
-            name="address1"
-            label="address1"
-            placeholder="Address Line1"
-            value={state.address1}
-            setValue={handleStateChanged}
-            icon={<FaAddressCard style={{ width: '100%', height: '100%' }} />}
-            isError={state.address1Err !== ''}
-            message={state.address1Err}
-          />
-          <Select
-            name="address2"
-            label="address2"
-            placeholder="Address Line2"
-            value={state.address2}
-            setValue={handleStateChanged}
-            icon={<FaAddressCard style={{ width: '100%', height: '100%' }} />}
-            isError={state.address2Err !== ''}
-            message={state.address2Err}
-            option={[
-              { value: 'Address 1' },
-              { value: 'Address 2' },
-              { value: 'Address 3' },
-              { value: 'Address 4' },
-              { value: 'Address 5' }
-            ]}
-          />
-        </InputGroup>
-        <InputGroup>
-          <InputField
-            type="text"
-            name="city"
-            label="city"
-            placeholder="City"
-            value={state.city}
-            setValue={handleStateChanged}
-            icon={<FaCity style={{ width: '100%', height: '100%' }} />}
-            isError={state.cityErr !== ''}
-            message={state.cityErr}
-          />
-          <InputField
-            type="text"
-            name="state"
-            label="state"
-            placeholder="State"
-            value={state.state}
-            setValue={handleStateChanged}
-            icon={<ImEarth style={{ width: '100%', height: '100%' }} />}
-            isError={state.stateErr !== ''}
-            message={state.stateErr}
-          />
-        </InputGroup>
-        <InputField
-          type="text"
-          name="phone"
-          label="phone"
-          placeholder="Phone Number"
-          value={state.phone}
-          setValue={handleStateChanged}
-          icon={<FaPhoneAlt style={{ width: '100%', height: '100%' }} />}
-          isError={state.phoneErr !== ''}
-          message={state.phoneErr}
-        />
-        <InputGroup>
-          <InputField
-            type="password"
-            name="password"
-            label="password"
-            placeholder="Password"
-            value={state.password}
-            setValue={handleStateChanged}
-            icon={<FaLock style={{ width: '100%', height: '100%' }} />}
-            isError={state.passwordErr !== ''}
-            message={state.passwordErr}
-          />
-          <InputField
-            type="password"
-            name="confirmPass"
-            label="Confirm Password"
-            placeholder="Confirm Password"
-            value={state.confirmPass}
-            setValue={handleStateChanged}
-            icon={<FaLock style={{ width: '100%', height: '100%' }} />}
-            isError={state.confirmPassErr !== ''}
-            message={state.confirmPassErr}
-          />
-        </InputGroup>
-        <Button color="#4096ff">Sign Up</Button>
-        <Label>
-          Already have an account ? <SignInLink onClick={() => navigate('/signin')}>Sign In</SignInLink>
-        </Label>
-      </LoginContainer>
-    </HomeContainer>
+    <Formik initialValues={state} validationSchema={validationSchema} onSubmit={(e) => submitForm(e)}>
+      {(formik) => {
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        const { values, handleChange, handleSubmit, errors, touched } = formik;
+        return (
+          <HomeContainer>
+            <LoginContainer>
+              <Avatar src={userAvatar} alt="user-avatar" />
+              <InputGroup>
+                <InputField
+                  type="text"
+                  name="firstName"
+                  label="FirstName"
+                  placeholder="First Name"
+                  value={values.firstName}
+                  setValue={handleChange}
+                  icon={<FaUser style={inputStyle} />}
+                  isError={errors.firstName !== null && touched.firstName}
+                  message={errors.firstName}
+                />
+                <InputField
+                  type="text"
+                  name="lastName"
+                  label="LastName"
+                  placeholder="Last Name"
+                  value={values.lastName}
+                  setValue={handleChange}
+                  icon={<FaUser style={inputStyle} />}
+                  isError={errors.lastName !== '' && touched.lastName}
+                  message={errors.lastName}
+                />
+              </InputGroup>
+              <InputField
+                type="text"
+                name="email"
+                label="email"
+                placeholder="Email"
+                value={values.email}
+                setValue={handleChange}
+                icon={<MdEmail style={inputStyle} />}
+                isError={errors.email !== '' && touched.email}
+                message={errors.email}
+              />
+              <InputGroup>
+                <InputField
+                  type="text"
+                  name="address1"
+                  label="address1"
+                  placeholder="Address Line1"
+                  value={values.address1}
+                  setValue={handleChange}
+                  icon={<FaAddressCard style={inputStyle} />}
+                  isError={errors.address1 !== '' && touched.address1}
+                  message={errors.address1}
+                />
+                <InputField
+                  type="text"
+                  name="address2"
+                  label="address2"
+                  placeholder="Address Line2"
+                  value={values.address2}
+                  setValue={handleChange}
+                  icon={<FaAddressCard style={inputStyle} />}
+                  isError={errors.address2 !== '' && touched.address2}
+                  message={errors.address2}
+                />
+              </InputGroup>
+
+              <InputGroup>
+                <InputField
+                  type="text"
+                  name="city"
+                  label="city"
+                  placeholder="City"
+                  value={values.city}
+                  setValue={handleChange}
+                  icon={<FaCity style={inputStyle} />}
+                  isError={errors.city !== '' && touched.city}
+                  message={errors.city}
+                />
+                <InputField
+                  type="text"
+                  name="state"
+                  label="state"
+                  placeholder="State"
+                  value={values.state}
+                  setValue={handleChange}
+                  icon={<ImEarth style={inputStyle} />}
+                  isError={errors.state !== '' && touched.state}
+                  message={errors.state}
+                />
+              </InputGroup>
+              <InputField
+                type="text"
+                name="phone"
+                label="phone"
+                placeholder="Phone Number"
+                value={values.phone}
+                setValue={handleChange}
+                icon={<FaPhoneAlt style={inputStyle} />}
+                isError={errors.phone !== '' && touched.phone}
+                message={errors.phone}
+              />
+              <InputGroup>
+                <InputField
+                  type="password"
+                  name="password"
+                  label="password"
+                  placeholder="Password"
+                  value={values.password}
+                  setValue={handleChange}
+                  icon={<FaLock style={inputStyle} />}
+                  isError={errors.password !== '' && touched.password}
+                  message={errors.password}
+                />
+                <InputField
+                  type="password"
+                  name="confirmPass"
+                  label="Confirm Password"
+                  placeholder="Confirm Password"
+                  value={values.confirmPass}
+                  setValue={handleChange}
+                  icon={<FaLock style={inputStyle} />}
+                  isError={errors.confirmPass !== '' && touched.confirmPass}
+                  message={errors.confirmPass}
+                />
+              </InputGroup>
+              <Button type="submit" color="#4096ff" onClick={handleSubmit}>
+                Sign Up
+              </Button>
+              <Label>
+                Already have an account ? <SignInLink onClick={() => navigate('/signin')}>Sign In</SignInLink>
+              </Label>
+            </LoginContainer>
+          </HomeContainer>
+        );
+      }}
+    </Formik>
   );
 };
 
