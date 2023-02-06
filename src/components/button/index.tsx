@@ -19,6 +19,7 @@ export const Button = (props: Buttonprops) => {
 const ButtonContainer = styled.button`
   width: 100%;
   height: 36px;
+  min-height: 36px;
   background-color: ${(props) => props.color};
   color: #ffffff;
   font-size: 15px;

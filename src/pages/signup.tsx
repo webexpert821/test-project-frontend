@@ -1,3 +1,5 @@
+/* eslint-disable no-console */
+import { useEffect } from 'react';
 import { FaUser, FaAddressCard, FaCity, FaPhoneAlt, FaLock } from 'react-icons/fa';
 import { MdEmail } from 'react-icons/md';
 import { ImEarth } from 'react-icons/im';
@@ -9,21 +11,33 @@ import { Button } from 'src/components/button';
 import { useNavigate } from 'react-router-dom';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
+import { signUpAction } from 'src/actions/auth';
 
-export const SignUp = () => {
-  interface StateProps {
-    firstName: string;
-    lastName: string;
-    email: string;
-    address1: string;
-    address2: string;
-    city: string;
-    state: string;
-    phone: string;
-    password: string;
-    confirmPass: string;
-  }
-  const state = {
+import { connect } from 'react-redux';
+import { useTranslation } from 'react-i18next';
+import { LanguageSelect } from 'src/components/select';
+interface StateProps {
+  firstName: string;
+  lastName: string;
+  email: string;
+  address1: string;
+  address2: string;
+  city: string;
+  state: string;
+  phone: string;
+  password: string;
+  confirmPass: string;
+}
+
+interface SignUpProps {
+  signUpAction: (values: StateProps) => void;
+  auth: { auth: object };
+}
+
+const SignUp = (props: SignUpProps) => {
+  const { signUpAction } = props;
+
+  const state: StateProps = {
     firstName: '',
     lastName: '',
     email: '',
@@ -37,47 +51,62 @@ export const SignUp = () => {
   };
 
   const navigate = useNavigate();
+  const { t } = useTranslation();
+
+  const pattern = /^\(\d{3}\)\s\d{3}-\d{4}$/;
+
+  const username = localStorage.getItem('username');
+  console.log({ username });
+  useEffect(() => {
+    if (username) {
+      const decoded: any = localStorage.token;
+      console.log(decoded);
+      navigate('/');
+    } else {
+      navigate('/signup');
+    }
+  }, [username]);
 
   const validationSchema = Yup.object().shape({
-    firstName: Yup.string().required('First Name is required'),
-    lastName: Yup.string().required('Last Name is required'),
-    email: Yup.string().email('Invalid Email').required('Emaili is reuqired'),
-    address1: Yup.string().required('Address1 is required'),
-    address2: Yup.string().required('Address2 is required'),
-    city: Yup.string().required('City is required'),
-    state: Yup.string().required('State is required'),
-    phone: Yup.string().required('State is required'),
+    firstName: Yup.string().required('First name is required'),
+    lastName: Yup.string().required(`Last name is required`),
+    email: Yup.string().email(`Email is not valid`).required(`Email is required`),
+    address1: Yup.string().required(`Address 1 is required`),
+    address2: Yup.string().required(`Address2 is required`),
+    city: Yup.string().required(`City is required`),
+    state: Yup.string().required(`State is required`),
+    phone: Yup.string().matches(pattern, 'Phone number is not valid').required(`Phone number is required`),
     password: Yup.string()
-      .required('Password is required')
-      .min(8, 'Password is too short - should be 8 characters minimum'),
+      .required(`Password is required`)
+      .min(8, `Password is too short - should be 8 characters minimum`),
     confirmPass: Yup.string()
-      .required('Confirm Password is required')
-      .oneOf([Yup.ref('password'), null], 'Password must be match')
-      .min(8, 'Password is too short - should be 8 characters minimum')
+      .required(`Confirm password is required`)
+      .oneOf([Yup.ref('password'), null], `Password is required`)
+      .min(8, `Password is too short - should be 8 characters minimum`)
   });
 
-  const submitForm = (values: StateProps) => {
-    // eslint-disable-next-line no-console
-    console.log({ values });
+  const submitForm = async (values: StateProps) => {
+    signUpAction(values);
   };
 
   const inputStyle = { width: '100%', height: '100%' };
 
   return (
-    <Formik initialValues={state} validationSchema={validationSchema} onSubmit={(e) => submitForm(e)}>
+    <Formik initialValues={state} validationSchema={validationSchema} onSubmit={async (e) => await submitForm(e)}>
       {(formik) => {
         // eslint-disable-next-line @typescript-eslint/naming-convention
         const { values, handleChange, handleSubmit, errors, touched } = formik;
         return (
           <HomeContainer>
             <LoginContainer>
+              <LanguageSelect />
               <Avatar src={userAvatar} alt="user-avatar" />
               <InputGroup>
                 <InputField
                   type="text"
                   name="firstName"
                   label="FirstName"
-                  placeholder="First Name"
+                  placeholder={String(t('signup.firstname'))}
                   value={values.firstName}
                   setValue={handleChange}
                   icon={<FaUser style={inputStyle} />}
@@ -88,7 +117,7 @@ export const SignUp = () => {
                   type="text"
                   name="lastName"
                   label="LastName"
-                  placeholder="Last Name"
+                  placeholder={String(t('signup.lastname'))}
                   value={values.lastName}
                   setValue={handleChange}
                   icon={<FaUser style={inputStyle} />}
@@ -100,7 +129,7 @@ export const SignUp = () => {
                 type="text"
                 name="email"
                 label="email"
-                placeholder="Email"
+                placeholder={String(t('signup.email'))}
                 value={values.email}
                 setValue={handleChange}
                 icon={<MdEmail style={inputStyle} />}
@@ -112,7 +141,7 @@ export const SignUp = () => {
                   type="text"
                   name="address1"
                   label="address1"
-                  placeholder="Address Line1"
+                  placeholder={String(t('signup.address1'))}
                   value={values.address1}
                   setValue={handleChange}
                   icon={<FaAddressCard style={inputStyle} />}
@@ -123,7 +152,7 @@ export const SignUp = () => {
                   type="text"
                   name="address2"
                   label="address2"
-                  placeholder="Address Line2"
+                  placeholder={String(t('signup.address2'))}
                   value={values.address2}
                   setValue={handleChange}
                   icon={<FaAddressCard style={inputStyle} />}
@@ -137,7 +166,7 @@ export const SignUp = () => {
                   type="text"
                   name="city"
                   label="city"
-                  placeholder="City"
+                  placeholder={String(t('signup.city'))}
                   value={values.city}
                   setValue={handleChange}
                   icon={<FaCity style={inputStyle} />}
@@ -148,7 +177,7 @@ export const SignUp = () => {
                   type="text"
                   name="state"
                   label="state"
-                  placeholder="State"
+                  placeholder={String(t('signup.state'))}
                   value={values.state}
                   setValue={handleChange}
                   icon={<ImEarth style={inputStyle} />}
@@ -160,7 +189,7 @@ export const SignUp = () => {
                 type="text"
                 name="phone"
                 label="phone"
-                placeholder="Phone Number"
+                placeholder={String(t('signup.phonenumber'))}
                 value={values.phone}
                 setValue={handleChange}
                 icon={<FaPhoneAlt style={inputStyle} />}
@@ -172,7 +201,7 @@ export const SignUp = () => {
                   type="password"
                   name="password"
                   label="password"
-                  placeholder="Password"
+                  placeholder={String(t('signup.password'))}
                   value={values.password}
                   setValue={handleChange}
                   icon={<FaLock style={inputStyle} />}
@@ -183,7 +212,7 @@ export const SignUp = () => {
                   type="password"
                   name="confirmPass"
                   label="Confirm Password"
-                  placeholder="Confirm Password"
+                  placeholder={String(t('signup.confirmpassword'))}
                   value={values.confirmPass}
                   setValue={handleChange}
                   icon={<FaLock style={inputStyle} />}
@@ -191,12 +220,15 @@ export const SignUp = () => {
                   message={errors.confirmPass}
                 />
               </InputGroup>
-              <Button type="submit" color="#4096ff" onClick={handleSubmit}>
-                Sign Up
-              </Button>
-              <Label>
-                Already have an account ? <SignInLink onClick={() => navigate('/signin')}>Sign In</SignInLink>
-              </Label>
+              <Action>
+                <Button type="submit" color="#4096ff" onClick={handleSubmit}>
+                  {t('signin.signup')}
+                </Button>
+                <Label>
+                  {t('signup.alreadyhave')}
+                  <SignInLink onClick={() => navigate('/signin')}>{t('signin.signin')}</SignInLink>
+                </Label>
+              </Action>
             </LoginContainer>
           </HomeContainer>
         );
@@ -225,3 +257,18 @@ const SignInLink = styled.div`
   text-decoration: underline;
   color: ${(props) => props.theme.primary};
 `;
+
+const Action = styled.div`
+  width: 100%;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  gap: 15px;
+  padding: 20px;
+`;
+
+const mapStateToProps = (state: any) => ({
+  auth: state.auth.auth
+});
+
+export default connect(mapStateToProps, { signUpAction })(SignUp);

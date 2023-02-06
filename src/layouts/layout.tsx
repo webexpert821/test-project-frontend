@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -10,7 +11,7 @@ export const Layout = ({ children }: LayoutProps) => {
     <MainContainer>
       {children}
       <ToastContainer
-        position="bottom-right"
+        position="top-right"
         autoClose={3000}
         hideProgressBar={false}
         newestOnTop={false}
@@ -24,7 +25,6 @@ export const Layout = ({ children }: LayoutProps) => {
 const MainContainer = styled.div`
   display: flex;
   flex-direction: column;
-  width: 100vw;
   height: 100vh;
   margin: 0;
 `;

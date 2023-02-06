@@ -1,4 +1,3 @@
-import React from 'react';
 import { Route, Routes, BrowserRouter as Router, Navigate } from 'react-router-dom';
 
 import { Home } from 'src/pages/home';
@@ -6,7 +5,8 @@ import { NotFoundPage } from 'src/pages/404';
 
 import { PUBLIC_ROUTES } from 'src/config/routes';
 import { SignIn } from 'src/pages/signIn';
-import { SignUp } from 'src/pages/signup';
+import SignUp from 'src/pages/signup';
+import '../config/i18n';
 
 export const HandleRouter = () => {
   return (

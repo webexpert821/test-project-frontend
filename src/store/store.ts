@@ -1,20 +1,16 @@
-import { configureStore, getDefaultMiddleware } from '@reduxjs/toolkit';
-import createSagaMiddleware from '@redux-saga/core';
+import { createStore, applyMiddleware } from 'redux';
+import thunk from 'redux-thunk';
+import rootReducer from './reducers';
 
-import rootSaga from './saga';
-import authReducer from './auth/reducers';
+const initialState = {
+};
 
-const sagaMiddleWare = createSagaMiddleware();
-const middleware = [...getDefaultMiddleware({ thunk: false }), sagaMiddleWare];
+const middleware = [thunk];
 
-const store = configureStore({
-  reducer: { auth: authReducer },
-  middleware
-});
-
-export type AppDispatch = typeof store.dispatch;
-export type RootState = ReturnType<typeof store.getState>;
-
-sagaMiddleWare.run(rootSaga);
+const store = createStore(
+    rootReducer,
+    initialState,
+    applyMiddleware(...middleware)
+);
 
 export default store;

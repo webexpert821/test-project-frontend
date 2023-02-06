@@ -13,11 +13,10 @@ interface InputProps {
   isError?: boolean;
   placeholder?: string;
   message?: string;
-  onBlur?: (e: React.FocusEvent<any, Element>) => void;
 }
 
 export const InputField = (props: InputProps) => {
-  const { icon, type, name, label, value, setValue, isDisabled, isError, placeholder, message } = props;
+  const { icon, type, name, value, setValue, isDisabled, isError, placeholder, message } = props;
   const inputRef = useRef<HTMLDivElement>(null);
   const valueRef = useRef<HTMLInputElement>(null);
   const [isVisit, setVisit] = useState(false);
@@ -92,7 +91,7 @@ const InputFieldContainer = styled.div<InputFieldProps>`
   height: 32px;
   border-radius: 8px;
   border: ${(props) =>
-    props.isError
+    props.isError ?? false
       ? `1px solid ${String(props.theme.danger)}`
       : props.visited === 1
       ? `1px solid ${String(props.theme.primary)}`

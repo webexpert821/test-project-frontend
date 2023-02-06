@@ -2,6 +2,7 @@ import { ThemeProvider } from 'styled-components';
 import { Provider } from 'react-redux';
 import { COLORS, TEXT_SIZE } from './config/config';
 import store from './store/store';
+import StoreProvider from './context/StoreContext';
 
 interface ProviderProps {
   children: React.ReactNode;
@@ -15,7 +16,9 @@ const theme = {
 export const AppProvider = ({ children }: ProviderProps) => {
   return (
     <ThemeProvider theme={theme}>
-      <Provider store={store}>{children}</Provider>
+      <StoreProvider>
+        <Provider store={store}>{children}</Provider>
+      </StoreProvider>
     </ThemeProvider>
   );
 };

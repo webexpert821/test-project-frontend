@@ -1,0 +1,38 @@
+{
+  "signin": {
+    "signin": "Sign In",
+    "orconnectwith": "Or connect with",
+    "donthave": "Don't have an account ?",
+    "signup": "Sign Up"
+  },
+  "signup": {
+    "firstname": "First Name",
+    "requirefirstname": "First Name is required",
+    "lastname": "Last Name",
+    "requirelastname": "Last Name is required",
+    "email": "Email",
+    "requireemail": "Email is required",
+    "invalidimail": "Invalid Email",
+    "address1": "Address Line 1",
+    "requireaddress1": "Address1 is required",
+    "address2": "Address Line 2",
+    "requireaddress2": "Address2 is required",
+    "city": "City",
+    "requirecity": "City is required",
+    "state": "State",
+    "requirestate": "State is required",
+    "phonenumber": "Phone Number",
+    "requiredphone": "Phone number is required",
+    "typeerrorphone": "Phone number is not valid",
+    "password": "Password",
+    "requirepass": "Password is required",
+    "shortpass": "Password is too short - should be 8 characters minimum",
+    "confirmpassword": "Confirm Password",
+    "requireconfirm": "Confirm Password is required",
+    "matchpass": "Password must be match",
+    "alreadyhave": "Already have an account ?"
+  },
+  "main": {
+    "hello": "Hello"
+  }
+}
