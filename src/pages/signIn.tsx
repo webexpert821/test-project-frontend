@@ -49,18 +49,19 @@ export const SignIn = () => {
     // eslint-disable-next-line no-console
     console.log({ values });
     await axios
-      .post(`${PRIVATE_ROUTES.backendURL}/api/auth`, values)
+      .post(`${PRIVATE_ROUTES.backendURL}/api/users/signin`, values)
       .then((res) => {
-        const token = res.data.token;
-        const decoded = jwtDecode(token);
-        const username = Object(decoded).user.firstName;
+        console.log({ res });
+        const userInfo = res.data;
+        const username = Object(userInfo).firstName;
+        console.log({ username });
         localStorage.setItem('username', username);
         navigate('/');
       })
       .catch((err) => {
         console.log({ err });
         // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-        toast.error(`${err.response.data.msg}`);
+        toast.error(`${err.response.data}`);
       });
   };
 

@@ -19,22 +19,23 @@ interface StateProps {
 }
 
 export const signUpAction = (values: StateProps) => async (dispatch: any) => {
+    console.log({ values })
      await axios
-      .post(`${PRIVATE_ROUTES.backendURL}/api/users`, values)
+      .post(`${PRIVATE_ROUTES.backendURL}/api/users/signup`, values)
       .then((response) => {
-        const token = response.data.token;
-        const decoded = jwtDecode(token)
-        const username = Object(decoded).user.firstName;
-        localStorage.setItem("username", username);
-        console.log(token);
+        console.log({ response })
+        const userInfo = response.data;
+        const username = Object(userInfo).firstName;
+        console.log({ username });
+        localStorage.setItem('username', username);
         dispatch({
           type: AUTH_ACTIONS.LOGIN_ACTION,
-          payload: decoded
+          payload: userInfo
         })
         toast.success("Successfully registered");
       })
       .catch((err) => {
         // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-        toast.error(`${err.response.data.msg}`);
+        toast.error(`${err.response.data}`);
       });
 }

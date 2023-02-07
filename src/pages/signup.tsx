@@ -30,7 +30,7 @@ interface StateProps {
 }
 
 interface SignUpProps {
-  signUpAction: (values: StateProps) => void;
+  signUpAction: (values: StateProps) => Promise<void>;
   auth: { auth: object };
 }
 
@@ -81,12 +81,13 @@ const SignUp = (props: SignUpProps) => {
       .min(8, `Password is too short - should be 8 characters minimum`),
     confirmPass: Yup.string()
       .required(`Confirm password is required`)
-      .oneOf([Yup.ref('password'), null], `Password is required`)
+      .oneOf([Yup.ref('password'), null], `Password is not match`)
       .min(8, `Password is too short - should be 8 characters minimum`)
   });
 
   const submitForm = async (values: StateProps) => {
-    signUpAction(values);
+    console.log({ values });
+    await signUpAction(values);
   };
 
   const inputStyle = { width: '100%', height: '100%' };
