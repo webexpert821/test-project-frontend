@@ -4,6 +4,7 @@ import { AppProvider } from './Provider';
 import { Layout } from './layouts/layout';
 import { HandleRouter } from './router';
 import { BrowserRouter } from 'react-router-dom';
+import './config/i18n';
 
 function App() {
   return (
