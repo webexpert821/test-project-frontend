@@ -4,7 +4,10 @@ import {
   LOGIN_SUCCESS,
   SIGNUP_REQUEST,
   SIGNUP_FAILURE,
-  SIGNUP_SUCCESS
+  SIGNUP_SUCCESS,
+  GETACCOUNT_REQUEST,
+  GETACCOUNT_SUCCESS,
+  LOGOUT_REQUEST
 } from "./actionTypes";
 import {
   LoginPayload,
@@ -18,7 +21,13 @@ import {
   SignupSuccess,
   SignupSuccessPayload,
   SignupFailure,
-  SignupFailurePayload
+  SignupFailurePayload,
+  GetAccountSuccessPayload,
+  GetAccountSuccess,
+  GetAccountRequest,
+  GetAccountRequestPayload,
+  LogOutRequest,
+  LogOutRequestPayload
 } from "./types";
 
 export const loginRequest = (payload: LoginPayload): LoginRequest => ({
@@ -50,3 +59,18 @@ export const signupFailure = ( payload: SignupFailurePayload ): SignupFailure =>
   type: SIGNUP_FAILURE,
   payload
 });
+
+export const getAccountRequest = (payload: GetAccountRequestPayload): GetAccountRequest => ({
+    type: GETACCOUNT_REQUEST,
+    payload
+})
+
+export const getAccountSuccess =  (payload: GetAccountSuccessPayload): GetAccountSuccess => ({
+    type: GETACCOUNT_SUCCESS,
+    payload
+})
+
+export const LogoutRequest = (payload: LogOutRequestPayload): LogOutRequest => ({
+  type: LOGOUT_REQUEST,
+  payload
+})

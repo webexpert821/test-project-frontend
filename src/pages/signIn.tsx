@@ -10,7 +10,8 @@ import { Formik } from 'formik';
 import { useTranslation } from 'react-i18next';
 import { LanguageSelect } from 'src/components/select';
 import { loginRequest } from 'src/store/auth/actions';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { useEffect } from 'react';
 
 export const SignIn = () => {
   interface StateProps {
@@ -23,6 +24,7 @@ export const SignIn = () => {
   };
   const { t } = useTranslation();
   const dispatch = useDispatch();
+  const { error: authError } = useSelector((state: any) => state.auth);
 
   const validationSchema = Yup.object().shape({
     email: Yup.string().email(`Email is not valid`).required(`Email is required`),
@@ -81,6 +83,7 @@ export const SignIn = () => {
                 isError={errors.password !== null && touched.password}
                 message={errors.password}
               />
+              {authError && <ErrorText>{authError}</ErrorText>}
               <Button type={'submit'} color="#4096ff" onClick={handleSubmit}>
                 {t('signin.signin')}
               </Button>
@@ -151,4 +154,9 @@ const SocialIcon = styled.img`
   width: 36px;
   height: 36px;
   cursor: pointer;
+`;
+
+const ErrorText = styled.div`
+  font-size: 14px;
+  color: red;
 `;

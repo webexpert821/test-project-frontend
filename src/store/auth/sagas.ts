@@ -1,14 +1,16 @@
 import axios from "axios";
 import { all, call, put, takeLatest } from "redux-saga/effects";
-import { PRIVATE_ROUTES } from "src/config/routes";
+import { PRIVATE_ROUTES, PUBLIC_ROUTES } from "src/config/routes";
 
 import {
   loginFailure,
   loginSuccess,
   signupSuccess,
-  signupFailure
+  signupFailure,
+  getAccountRequest,
+  getAccountSuccess
 } from "./actions";
-import { LOGIN_REQUEST, SIGNUP_REQUEST } from "./actionTypes";
+import { LOGIN_REQUEST, SIGNUP_REQUEST, GETACCOUNT_REQUEST } from "./actionTypes";
 import { IAuth } from "./types";
 
 interface SigninProps {
@@ -26,6 +28,12 @@ interface SignupProps {
   state: string;
   phone: string;
   password: string;
+}
+
+interface getAccountProps {
+  email: string;
+  firstName: string;
+  lastName: string;
 }
 
 const login = async (payload: SigninProps) => {
@@ -59,23 +67,41 @@ const signup = async (payload: SignupProps) => {
   return data;
 };
 
+const getAccount = async(payload: { token: string }) => {
+  // eslint-disable-next-line no-console
+  console.log(payload.token)
+  const { data } = await axios.post(
+    `${PRIVATE_ROUTES.backendURL}/api/users/me`,
+    {...payload},
+     {
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json"
+      }
+    }
+  )
+  return data;
+}
+
 function* loginSaga(action: any) {
   try {
-    const response: { token: string } = yield call(login, {
+    const response: { accessToken: string, refreshToken: string, user: SignupProps } = yield call(login, {
       email: action.payload.values.email,
       password: action.payload.values.password
     });
 
     yield put(
       loginSuccess({
-        token: response.token
+        token: response.accessToken
       })
     );
-    action.payload.callback(response.token);
+    localStorage.setItem('refreshToken', response.refreshToken);
+    localStorage.setItem('accessToken', response.accessToken);
+    location.replace(PUBLIC_ROUTES.home);
   } catch (e: any) {
     yield put(
       loginFailure({
-        error: e.message
+        error: e.response.data
       })
     );
   }
@@ -83,7 +109,7 @@ function* loginSaga(action: any) {
 
 function* signupSaga(action: any) {
   try {
-    const response: { token: string } = yield call(signup, {
+    const response: { accessToken: string, refreshToken: string, user: SignupProps} = yield call(signup, {
       firstName: action.payload.values.firstName,
       lastName: action.payload.values.lastName,
       email: action.payload.values.email,
@@ -97,12 +123,12 @@ function* signupSaga(action: any) {
 
     yield put(
       signupSuccess({
-        token: response.token
+        token: response.accessToken
       })
     );
-    localStorage.setItem('token', response.token);
-    // eslint-disable-next-line no-console
-    action.payload.callback(response.token);
+    localStorage.setItem('refreshToken', response.refreshToken);
+    localStorage.setItem('accessToken', response.accessToken);
+    location.replace(PUBLIC_ROUTES.signin);
   } catch (e: any) {
     // eslint-disable-next-line no-console
     console.log({ e })
@@ -110,15 +136,37 @@ function* signupSaga(action: any) {
       signupFailure({
         error: e.response.data
       })
-      );
+    );
+  }
+}
 
-      action.payload.callback(e.response.data);
+function* getAccountSaga(action: any) {
+  try {
+    // eslint-disable-next-line no-console
+    const response: { user: getAccountProps } = yield call(getAccount, {
+      token: action.payload.token
+    })
+    
+    // eslint-disable-next-line no-console
+    console.log(response.user.email);
+    yield put(
+      getAccountSuccess({
+        hasInfo: true,
+        email: response.user.email,
+        firstName: response.user.firstName,
+        lastName: response.user.lastName
+      })
+    )
+  } catch(e: any) {
+    // eslint-disable-next-line no-console
+    console.log(e)
   }
 }
 
 function* authSaga() {
   yield all([takeLatest(LOGIN_REQUEST, loginSaga)]);
   yield all([takeLatest(SIGNUP_REQUEST, signupSaga)]);
+  yield all([takeLatest(GETACCOUNT_REQUEST, getAccountSaga)]);
 }
 
 export default authSaga;

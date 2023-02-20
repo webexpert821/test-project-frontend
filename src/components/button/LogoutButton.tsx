@@ -1,9 +1,17 @@
-import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { LogoutRequest } from 'src/store/auth/actions';
 import styled, { css } from 'styled-components';
 
 export const LogoutButton = () => {
+  const dispatch = useDispatch();
+  const logout = () => {
+    const token = localStorage.getItem('accessToken');
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
+    token && dispatch(LogoutRequest({ token }));
+  };
   return (
-    <LogoutButtonContainer>
+    <LogoutButtonContainer onClick={() => logout()}>
       <LogoutButtonWrapper>
         <LogoutButtonContent>Log out</LogoutButtonContent>
       </LogoutButtonWrapper>

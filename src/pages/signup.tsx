@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-'use strict';
+import { useEffect } from 'react';
 import { FaUser, FaAddressCard, FaCity, FaPhoneAlt, FaLock } from 'react-icons/fa';
 import { MdEmail } from 'react-icons/md';
 import { ImEarth } from 'react-icons/im';
@@ -17,6 +17,8 @@ import { LanguageSelect } from 'src/components/select';
 import { useDispatch, useSelector } from 'react-redux';
 import { signupRequest } from 'src/store/auth/actions';
 import { getErrorSelector } from 'src/store/auth/selector';
+import { PUBLIC_ROUTES } from 'src/config/routes';
+import { push } from 'connected-react-router';
 
 interface StateProps {
   firstName: string;
@@ -54,8 +56,8 @@ export const SignUp = () => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const { error: authError } = useSelector((state: any) => state.auth);
-  // const pattern = /^\(\d{3}\)\s\d{3}-\d{4}$/; .matches(pattern, 'Phone number is not valid')
 
+  // const pattern = /^\(\d{3}\)\s\d{3}-\d{4}$/; .matches(pattern, 'Phone number is not valid')
   const validationSchema = Yup.object().shape({
     firstName: Yup.string().required('First name is required'),
     lastName: Yup.string().required(`Last name is required`),

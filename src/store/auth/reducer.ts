@@ -4,14 +4,21 @@ import {
   LOGIN_FAILURE,
   SIGNUP_REQUEST,
   SIGNUP_SUCCESS,
-  SIGNUP_FAILURE
+  SIGNUP_FAILURE,
+  GETACCOUNT_REQUEST,
+  GETACCOUNT_SUCCESS,
+  LOGOUT_REQUEST
 } from "./actionTypes";
 
 import { AuthActions, AuthState } from "./types";
 
 const initialState: AuthState = {
   pending: false,
+  hasInfo: false,
   token: "",
+  email: "",
+  firstName: "",
+  lastName: "",
   error: null
 };
 
@@ -57,6 +64,27 @@ const reducers = (state = initialState, action: AuthActions) => {
         token: "",
         error: action.payload.error
       };
+    case GETACCOUNT_REQUEST: 
+      return {
+        ...state,
+        pending: true
+      };
+    case GETACCOUNT_SUCCESS: 
+      return {
+        ...state,
+        hasInfo: action.payload.hasInfo,
+        email: action.payload.email,
+        firstName: action.payload.firstName,
+        lastName: action.payload.lastName
+      }
+    case LOGOUT_REQUEST: 
+      return {
+        ...state,
+        hasInfo: false,
+        email: "",
+        firstName: "",
+        lastName: ""
+      }
     default:
       return {
         ...state
