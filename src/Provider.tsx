@@ -1,7 +1,7 @@
 import { ThemeProvider } from 'styled-components';
 import { Provider } from 'react-redux';
 import { COLORS, TEXT_SIZE } from './config/config';
-import store from './store/store';
+import store from './store';
 import StoreProvider from './context/StoreContext';
 
 interface ProviderProps {

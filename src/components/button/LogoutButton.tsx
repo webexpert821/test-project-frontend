@@ -2,15 +2,10 @@ import { useNavigate } from 'react-router-dom';
 import styled, { css } from 'styled-components';
 
 export const LogoutButton = () => {
-  const navigate = useNavigate();
-  const logOut = () => {
-    localStorage.removeItem('username');
-    navigate('/signin');
-  };
   return (
     <LogoutButtonContainer>
       <LogoutButtonWrapper>
-        <LogoutButtonContent onClick={logOut}>Log out</LogoutButtonContent>
+        <LogoutButtonContent>Log out</LogoutButtonContent>
       </LogoutButtonWrapper>
     </LogoutButtonContainer>
   );

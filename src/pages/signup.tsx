@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import { useEffect } from 'react';
+'use strict';
 import { FaUser, FaAddressCard, FaCity, FaPhoneAlt, FaLock } from 'react-icons/fa';
 import { MdEmail } from 'react-icons/md';
 import { ImEarth } from 'react-icons/im';
@@ -11,11 +11,13 @@ import { Button } from 'src/components/button';
 import { useNavigate } from 'react-router-dom';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
-import { signUpAction } from 'src/actions/auth';
 
-import { connect } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { LanguageSelect } from 'src/components/select';
+import { useDispatch, useSelector } from 'react-redux';
+import { signupRequest } from 'src/store/auth/actions';
+import { getErrorSelector } from 'src/store/auth/selector';
+
 interface StateProps {
   firstName: string;
   lastName: string;
@@ -29,14 +31,12 @@ interface StateProps {
   confirmPass: string;
 }
 
-interface SignUpProps {
-  signUpAction: (values: StateProps) => Promise<void>;
-  auth: { auth: object };
-}
+// interface SignUpProps {
+//   signUpAction: (values: StateProps) => Promise<void>;
+//   auth: { auth: object };
+// }
 
-const SignUp = (props: SignUpProps) => {
-  const { signUpAction } = props;
-
+export const SignUp = () => {
   const state: StateProps = {
     firstName: '',
     lastName: '',
@@ -52,20 +52,9 @@ const SignUp = (props: SignUpProps) => {
 
   const navigate = useNavigate();
   const { t } = useTranslation();
-
-  const pattern = /^\(\d{3}\)\s\d{3}-\d{4}$/;
-
-  const username = localStorage.getItem('username');
-  console.log({ username });
-  useEffect(() => {
-    if (username) {
-      const decoded: any = localStorage.token;
-      console.log(decoded);
-      navigate('/');
-    } else {
-      navigate('/signup');
-    }
-  }, [username]);
+  const dispatch = useDispatch();
+  const { error: authError } = useSelector((state: any) => state.auth);
+  // const pattern = /^\(\d{3}\)\s\d{3}-\d{4}$/; .matches(pattern, 'Phone number is not valid')
 
   const validationSchema = Yup.object().shape({
     firstName: Yup.string().required('First name is required'),
@@ -75,7 +64,7 @@ const SignUp = (props: SignUpProps) => {
     address2: Yup.string().required(`Address2 is required`),
     city: Yup.string().required(`City is required`),
     state: Yup.string().required(`State is required`),
-    phone: Yup.string().matches(pattern, 'Phone number is not valid').required(`Phone number is required`),
+    phone: Yup.string().required(`Phone number is required`),
     password: Yup.string()
       .required(`Password is required`)
       .min(8, `Password is too short - should be 8 characters minimum`),
@@ -85,9 +74,17 @@ const SignUp = (props: SignUpProps) => {
       .min(8, `Password is too short - should be 8 characters minimum`)
   });
 
+  const callback = () => {
+    console.log('Inside callback after login');
+  };
+
   const submitForm = async (values: StateProps) => {
     console.log({ values });
-    await signUpAction(values);
+    const data = {
+      values,
+      callback
+    };
+    dispatch(signupRequest(data));
   };
 
   const inputStyle = { width: '100%', height: '100%' };
@@ -222,6 +219,7 @@ const SignUp = (props: SignUpProps) => {
                 />
               </InputGroup>
               <Action>
+                {authError && <ErrorText>{authError}</ErrorText>}
                 <Button type="submit" color="#4096ff" onClick={handleSubmit}>
                   {t('signin.signup')}
                 </Button>
@@ -268,8 +266,7 @@ const Action = styled.div`
   padding: 20px;
 `;
 
-const mapStateToProps = (state: any) => ({
-  auth: state.auth.auth
-});
-
-export default connect(mapStateToProps, { signUpAction })(SignUp);
+const ErrorText = styled.div`
+  font-size: 14px;
+  color: red;
+`;

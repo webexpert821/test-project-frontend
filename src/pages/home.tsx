@@ -8,27 +8,13 @@ import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 
 export const Home = () => {
-  const navigate = useNavigate();
-  const username = localStorage.getItem('username');
-  console.log({ username });
-  useEffect(() => {
-    if (username) {
-      const decoded: any = localStorage.token;
-      console.log(decoded);
-      navigate('/');
-    } else {
-      navigate('/signin');
-    }
-  }, [username]);
   const { t } = useTranslation();
   return (
     <HomeContainer>
       <LoginContainer>
         <LanguageSelect />
         <LogoutButton />
-        <Label>
-          {t('main.hello')} {username}
-        </Label>
+        <Label>{t('main.hello')}</Label>
       </LoginContainer>
     </HomeContainer>
   );

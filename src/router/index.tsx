@@ -5,7 +5,7 @@ import { NotFoundPage } from 'src/pages/404';
 
 import { PUBLIC_ROUTES } from 'src/config/routes';
 import { SignIn } from 'src/pages/signIn';
-import SignUp from 'src/pages/signup';
+import { SignUp } from 'src/pages/signup';
 import '../config/i18n';
 
 export const HandleRouter = () => {

@@ -6,14 +6,11 @@ import { Button } from 'src/components/button';
 import { userAvatar, GoogleIcon, TwitterIcon, FacebookIcon, LinkedinIcon } from 'src/config/images';
 import { useNavigate } from 'react-router-dom';
 import * as Yup from 'yup';
-import { useEffect } from 'react';
 import { Formik } from 'formik';
-import axios from 'axios';
-import { PRIVATE_ROUTES } from 'src/config/routes';
-import { toast } from 'react-toastify';
-import jwtDecode from 'jwt-decode';
 import { useTranslation } from 'react-i18next';
 import { LanguageSelect } from 'src/components/select';
+import { loginRequest } from 'src/store/auth/actions';
+import { useDispatch } from 'react-redux';
 
 export const SignIn = () => {
   interface StateProps {
@@ -25,18 +22,7 @@ export const SignIn = () => {
     password: ''
   };
   const { t } = useTranslation();
-
-  const username = localStorage.getItem('username');
-  console.log({ username });
-  useEffect(() => {
-    if (username) {
-      const decoded: any = localStorage.token;
-      console.log(decoded);
-      navigate('/');
-    } else {
-      navigate('/signin');
-    }
-  }, [username]);
+  const dispatch = useDispatch();
 
   const validationSchema = Yup.object().shape({
     email: Yup.string().email(`Email is not valid`).required(`Email is required`),
@@ -45,24 +31,18 @@ export const SignIn = () => {
       .min(8, `Password is too short - should be 8 characters minimum`)
   });
 
+  const callback = () => {
+    console.log('Inside callback after login');
+  };
+
   const submitForm = async (values: StateProps) => {
     // eslint-disable-next-line no-console
     console.log({ values });
-    await axios
-      .post(`${PRIVATE_ROUTES.backendURL}/api/users/signin`, values)
-      .then((res) => {
-        console.log({ res });
-        const userInfo = res.data;
-        const username = Object(userInfo).firstName;
-        console.log({ username });
-        localStorage.setItem('username', username);
-        navigate('/');
-      })
-      .catch((err) => {
-        console.log({ err });
-        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-        toast.error(`${err.response.data}`);
-      });
+    const data = {
+      values,
+      callback
+    };
+    dispatch(loginRequest(data));
   };
 
   const navigate = useNavigate();
